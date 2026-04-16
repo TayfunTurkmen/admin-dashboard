@@ -67,6 +67,12 @@ npm run preview
 
 Deploy icin GitHub Pages, Netlify veya Vercel kullanilabilir.
 
+Render uzerinde deploy ederken Web Service ayarlari:
+
+- Build Command: `npm install && npm run build`
+- Start Command: `npm run start`
+- Port: Render otomatik `PORT` env verir; Vite config bunu otomatik kullanir.
+
 ## Tasarim ve Teknik Gorev
 
 - Tasarim: Figma/teknik gorev baglantisi (eklenecek)

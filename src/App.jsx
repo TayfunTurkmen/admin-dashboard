@@ -15,6 +15,7 @@ import * as yup from "yup";
 import { productCategories } from "./data/mockData";
 import { loginUser, logoutUser, observeAuthState } from "./services/authService";
 import { addItem, deleteItem, fetchCollection, updateItem } from "./services/dataService";
+import { displayNumber, displayValue, toDateInputValue } from "./utils/displayValue";
 
 const AuthContext = createContext(null);
 const tableEmpty = <p className="table-empty">No records found.</p>;
@@ -27,7 +28,16 @@ const menuItems = [
   { to: "/suppliers", label: "Suppliers", icon: "suppliers" },
 ];
 
-const formatCurrency = (value) => `${Number(value).toLocaleString("tr-TR")} TL`;
+const formatCurrency = (value) => {
+  const n = displayNumber(value);
+  if (n == null) return displayValue(value);
+  return `${n.toLocaleString("tr-TR")} TL`;
+};
+
+const parseSortTime = (value) => {
+  const t = Date.parse(displayValue(value));
+  return Number.isFinite(t) ? t : 0;
+};
 
 const Icon = ({ name, className = "icon", title }) => (
   <svg className={className} aria-hidden={!title} role={title ? "img" : "presentation"}>
@@ -234,15 +244,15 @@ function DashboardPage() {
         <div className="stats-grid">
           <article>
             <h3>All products</h3>
-            <p>{stats.allProducts}</p>
+            <p>{displayValue(stats.allProducts)}</p>
           </article>
           <article>
             <h3>All suppliers</h3>
-            <p>{stats.allSuppliers}</p>
+            <p>{displayValue(stats.allSuppliers)}</p>
           </article>
           <article>
             <h3>All customers</h3>
-            <p>{stats.allCustomers}</p>
+            <p>{displayValue(stats.allCustomers)}</p>
           </article>
         </div>
       </div>
@@ -262,9 +272,9 @@ function DashboardPage() {
               {recentCustomers.map((item) => (
                 <tr key={item.id}>
                   <td>
-                    <EllipsisText text={item.name} length={18} />
+                    <EllipsisText text={displayValue(item.name)} length={18} />
                   </td>
-                  <td>{item.email}</td>
+                  <td>{displayValue(item.email)}</td>
                   <td>{formatCurrency(item.spent)}</td>
                 </tr>
               ))}
@@ -287,8 +297,8 @@ function DashboardPage() {
             <tbody>
               {incomeExpenses.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.title}</td>
-                  <td>{item.email}</td>
+                  <td>{displayValue(item.title)}</td>
+                  <td>{displayValue(item.email)}</td>
                   <td className={item.type === "income" ? "status positive" : "status negative"}>
                     {formatCurrency(item.amount)}
                   </td>
@@ -322,7 +332,9 @@ function OrdersPage() {
     fetchCollection("orders").then(setRows);
   }, []);
 
-  const filtered = rows.filter((row) => row.userInfo.toLowerCase().includes(search.toLowerCase()));
+  const filtered = rows.filter((row) =>
+    displayValue(row.userInfo).toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <section className="card">
@@ -343,16 +355,16 @@ function OrdersPage() {
           <tbody>
             {filtered.map((item) => (
               <tr key={item.id}>
-                <td>{item.userInfo}</td>
+                <td>{displayValue(item.userInfo)}</td>
                 <td>
-                  <EllipsisText text={item.address} length={21} />
+                  <EllipsisText text={displayValue(item.address)} length={21} />
                 </td>
                 <td>
-                  <EllipsisText text={item.products} length={22} />
+                  <EllipsisText text={displayValue(item.products)} length={22} />
                 </td>
-                <td>{item.orderDate}</td>
+                <td>{displayValue(item.orderDate)}</td>
                 <td>{formatCurrency(item.price)}</td>
-                <td>{item.status}</td>
+                <td>{displayValue(item.status)}</td>
               </tr>
             ))}
           </tbody>
@@ -409,13 +421,21 @@ function ProductModal({ open, initialValues, onClose, onSubmit }) {
   useEffect(() => {
     if (open) {
       reset(
-        initialValues ?? {
-          productInfo: "",
-          category: productCategories[0],
-          stock: "",
-          suppliers: "",
-          price: "",
-        },
+        initialValues
+          ? {
+              productInfo: displayValue(initialValues.productInfo),
+              category: displayValue(initialValues.category) || productCategories[0],
+              stock: displayNumber(initialValues.stock) ?? "",
+              suppliers: displayValue(initialValues.suppliers),
+              price: displayNumber(initialValues.price) ?? "",
+            }
+          : {
+              productInfo: "",
+              category: productCategories[0],
+              stock: "",
+              suppliers: "",
+              price: "",
+            },
       );
     }
   }, [initialValues, open, reset]);
@@ -473,7 +493,7 @@ function ProductsPage() {
 
   useEffect(() => {
     fetchCollection("products").then((result) => {
-      const sorted = result.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+      const sorted = result.sort((a, b) => parseSortTime(b.createdAt) - parseSortTime(a.createdAt));
       setRows(sorted);
     });
   }, []);
@@ -506,7 +526,9 @@ function ProductsPage() {
     setRows((prev) => prev.filter((item) => item.id !== id));
   };
 
-  const filtered = rows.filter((row) => row.productInfo.toLowerCase().includes(search.toLowerCase()));
+  const filtered = rows.filter((row) =>
+    displayValue(row.productInfo).toLowerCase().includes(search.toLowerCase()),
+  );
 
   return (
     <section className="card">
@@ -536,12 +558,12 @@ function ProductsPage() {
             {filtered.map((item) => (
               <tr key={item.id}>
                 <td>
-                  <EllipsisText text={item.productInfo} length={23} />
+                  <EllipsisText text={displayValue(item.productInfo)} length={23} />
                 </td>
-                <td>{item.category}</td>
-                <td>{item.stock}</td>
+                <td>{displayValue(item.category)}</td>
+                <td>{displayValue(item.stock)}</td>
                 <td>
-                  <EllipsisText text={item.suppliers} length={16} />
+                  <EllipsisText text={displayValue(item.suppliers)} length={16} />
                 </td>
                 <td>{formatCurrency(item.price)}</td>
                 <td className="actions-cell">
@@ -600,14 +622,23 @@ function SupplierModal({ open, initialValues, onClose, onSubmit }) {
   useEffect(() => {
     if (open) {
       reset(
-        initialValues ?? {
-          suppliersInfo: "",
-          address: "",
-          company: "",
-          deliveryDate: "",
-          amount: "",
-          status: "Active",
-        },
+        initialValues
+          ? {
+              suppliersInfo: displayValue(initialValues.suppliersInfo),
+              address: displayValue(initialValues.address),
+              company: displayValue(initialValues.company),
+              deliveryDate: toDateInputValue(initialValues.deliveryDate),
+              amount: displayNumber(initialValues.amount) ?? "",
+              status: displayValue(initialValues.status) || "Active",
+            }
+          : {
+              suppliersInfo: "",
+              address: "",
+              company: "",
+              deliveryDate: "",
+              amount: "",
+              status: "Active",
+            },
       );
     }
   }, [initialValues, open, reset]);
@@ -682,7 +713,7 @@ function SuppliersPage() {
   };
 
   const filtered = rows.filter((row) =>
-    row.suppliersInfo.toLowerCase().includes(search.toLowerCase()),
+    displayValue(row.suppliersInfo).toLowerCase().includes(search.toLowerCase()),
   );
 
   return (
@@ -715,16 +746,16 @@ function SuppliersPage() {
           <tbody>
             {filtered.map((item) => (
               <tr key={item.id}>
-                <td>{item.suppliersInfo}</td>
+                <td>{displayValue(item.suppliersInfo)}</td>
                 <td>
-                  <EllipsisText text={item.address} length={20} />
+                  <EllipsisText text={displayValue(item.address)} length={20} />
                 </td>
                 <td>
-                  <EllipsisText text={item.company} length={18} />
+                  <EllipsisText text={displayValue(item.company)} length={18} />
                 </td>
-                <td>{item.deliveryDate}</td>
+                <td>{displayValue(item.deliveryDate)}</td>
                 <td>{formatCurrency(item.amount)}</td>
-                <td>{item.status}</td>
+                <td>{displayValue(item.status)}</td>
                 <td className="actions-cell">
                   <button
                     type="button"
@@ -761,7 +792,9 @@ function CustomersPage() {
     fetchCollection("customers").then(setRows);
   }, []);
 
-  const filtered = rows.filter((row) => row.userInfo.toLowerCase().includes(search.toLowerCase()));
+  const filtered = rows.filter((row) =>
+    displayValue(row.userInfo).toLowerCase().includes(search.toLowerCase()),
+  );
   const totalPages = Math.max(1, Math.ceil(filtered.length / pageSize));
   const clampedPage = Math.min(page, totalPages);
   const currentRows = filtered.slice((clampedPage - 1) * pageSize, clampedPage * pageSize);
@@ -793,13 +826,13 @@ function CustomersPage() {
           <tbody>
             {currentRows.map((item) => (
               <tr key={item.id}>
-                <td>{item.userInfo}</td>
-                <td>{item.email}</td>
+                <td>{displayValue(item.userInfo)}</td>
+                <td>{displayValue(item.email)}</td>
                 <td>
-                  <EllipsisText text={item.address} length={20} />
+                  <EllipsisText text={displayValue(item.address)} length={20} />
                 </td>
-                <td>{item.phone}</td>
-                <td>{item.registerDate}</td>
+                <td>{displayValue(item.phone)}</td>
+                <td>{displayValue(item.registerDate)}</td>
                 <td className="actions-cell">
                   <button type="button" className="icon-btn" aria-label="Edit customer">
                     <Icon name="edit" />

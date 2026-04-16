@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg">
+  <symbol id="logo" viewBox="0 0 24 24">
+    <path d="M12 2c4.95 0 9 4.05 9 9v7a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4v-7c0-4.95 4.05-9 9-9Z" />
+    <path fill="#fff" d="M12 6.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm-5 9.5h10a1 1 0 0 1 1 1v1.2a.8.8 0 0 1-.8.8H6.8a.8.8 0 0 1-.8-.8V17a1 1 0 0 1 1-1Z" />
+  </symbol>
+  <symbol id="dashboard" viewBox="0 0 24 24">
+    <path d="M4 13h7V4H4v9Zm0 7h7v-5H4v5Zm9 0h7v-9h-7v9Zm0-16v5h7V4h-7Z" />
+  </symbol>
+  <symbol id="orders" viewBox="0 0 24 24">
+    <path d="M5 4h14a1 1 0 0 1 1 1v14l-4-2-4 2-4-2-4 2V5a1 1 0 0 1 1-1Zm2 4v2h10V8H7Zm0 4v2h7v-2H7Z" />
+  </symbol>
+  <symbol id="products" viewBox="0 0 24 24">
+    <path d="m12 2 9 5v10l-9 5-9-5V7l9-5Zm0 2.3L6.5 7 12 9.8 17.5 7 12 4.3Zm-7 4.3v7.2l6 3.3v-7.2l-6-3.3Zm8 10.5 6-3.3V8.6l-6 3.3v7.2Z" />
+  </symbol>
+  <symbol id="customers" viewBox="0 0 24 24">
+    <path d="M16 11a4 4 0 1 0-3.998-4A4 4 0 0 0 16 11Zm-8 1a3 3 0 1 0-3-3 3 3 0 0 0 3 3Zm8 2c-3.314 0-6 1.567-6 3.5V20h12v-2.5C22 15.567 19.314 14 16 14Zm-8 0c-2.761 0-5 1.343-5 3v3h5v-2.5c0-.809.28-1.53.774-2.14A6.8 6.8 0 0 0 8 14Z" />
+  </symbol>
+  <symbol id="suppliers" viewBox="0 0 24 24">
+    <path d="M3 21V8l9-5 9 5v13h-6v-6H9v6H3Zm4-9h10V9H7v3Z" />
+  </symbol>
+  <symbol id="edit" viewBox="0 0 24 24">
+    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25Zm17.71-10.04a1.004 1.004 0 0 0 0-1.42l-2.5-2.5a1.004 1.004 0 0 0-1.42 0l-1.96 1.96 3.75 3.75 2.13-1.79Z" />
+  </symbol>
+  <symbol id="delete" viewBox="0 0 24 24">
+    <path d="M6 7h12l-1 14H7L6 7Zm3-4h6l1 2h4v2H4V5h4l1-2Z" />
+  </symbol>
+  <symbol id="close" viewBox="0 0 24 24">
+    <path d="m18.3 5.71-1.41-1.42L12 9.17 7.11 4.29 5.7 5.71 10.58 10.6 5.7 15.49l1.41 1.42L12 12l4.89 4.91 1.41-1.42-4.88-4.89 4.88-4.89Z" />
+  </symbol>
+</svg>

@@ -13,5 +13,6 @@ export default defineConfig({
   preview: {
     host: "0.0.0.0",
     port: getPort(4173),
+    allowedHosts: ["admin-dashboard-zg4y.onrender.com"],
   },
 });

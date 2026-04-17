@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { TruncatedText } from "./components/TruncatedText";
+import { EllipsisCell } from "./components/EllipsisCell";
 import { useForm } from "react-hook-form";
 import {
   Link,
@@ -37,6 +37,12 @@ const formatCurrency = (value) => {
 const parseSortTime = (value) => {
   const t = Date.parse(displayValue(value));
   return Number.isFinite(t) ? t : 0;
+};
+
+const formErrorMessage = (fieldError) => {
+  if (!fieldError?.message) return "";
+  const m = fieldError.message;
+  return Array.isArray(m) ? m.map(String).join(" ") : String(m);
 };
 
 const Icon = ({ name, className = "icon", title }) => (
@@ -191,7 +197,7 @@ function LoginPage() {
       await login(values);
       navigate("/home", { replace: true });
     } catch (error) {
-      setRequestError(error?.message ? String(error.message) : String(error));
+      setRequestError(error instanceof Error ? error.message : String(error));
     }
   };
 
@@ -205,7 +211,7 @@ function LoginPage() {
           Email
           <input type="email" placeholder="Email" autoComplete="email" {...register("email")} />
         </label>
-        {errors.email ? <p className="field-error">{errors.email.message}</p> : null}
+        {errors.email ? <p className="field-error">{formErrorMessage(errors.email)}</p> : null}
 
         <label>
           Sifre
@@ -216,7 +222,7 @@ function LoginPage() {
             {...register("password")}
           />
         </label>
-        {errors.password ? <p className="field-error">{errors.password.message}</p> : null}
+        {errors.password ? <p className="field-error">{formErrorMessage(errors.password)}</p> : null}
 
         {requestError ? <p className="field-error">{requestError}</p> : null}
         <button type="submit" disabled={isSubmitting}>
@@ -281,7 +287,7 @@ function DashboardPage() {
               {recentCustomers.map((item) => (
                 <tr key={item.id}>
                   <td>
-                    <TruncatedText value={item.name} maxLength={18} />
+                    <EllipsisCell text={item.name} maxWidth="18ch" />
                   </td>
                   <td>{displayValue(item.email)}</td>
                   <td>{formatCurrency(item.spent)}</td>
@@ -366,10 +372,10 @@ function OrdersPage() {
               <tr key={item.id}>
                 <td>{displayValue(item.userInfo)}</td>
                 <td>
-                  <TruncatedText value={item.address} maxLength={21} />
+                  <EllipsisCell text={item.address} maxWidth="21ch" />
                 </td>
                 <td>
-                  <TruncatedText value={item.products} maxLength={22} />
+                  <EllipsisCell text={item.products} maxWidth="22ch" />
                 </td>
                 <td>{displayValue(item.orderDate)}</td>
                 <td>{formatCurrency(item.price)}</td>
@@ -455,7 +461,7 @@ function ProductModal({ open, initialValues, onClose, onSubmit }) {
         <label>
           Product Info
           <input {...register("productInfo")} />
-          {errors.productInfo ? <small>{errors.productInfo.message}</small> : null}
+          {errors.productInfo ? <small>{formErrorMessage(errors.productInfo)}</small> : null}
         </label>
         <label>
           Category
@@ -470,17 +476,17 @@ function ProductModal({ open, initialValues, onClose, onSubmit }) {
         <label>
           Stock
           <input type="number" {...register("stock")} />
-          {errors.stock ? <small>{errors.stock.message}</small> : null}
+          {errors.stock ? <small>{formErrorMessage(errors.stock)}</small> : null}
         </label>
         <label>
           Suppliers
           <input {...register("suppliers")} />
-          {errors.suppliers ? <small>{errors.suppliers.message}</small> : null}
+          {errors.suppliers ? <small>{formErrorMessage(errors.suppliers)}</small> : null}
         </label>
         <label>
           Price
           <input type="number" {...register("price")} />
-          {errors.price ? <small>{errors.price.message}</small> : null}
+          {errors.price ? <small>{formErrorMessage(errors.price)}</small> : null}
         </label>
         <div className="modal-actions">
           <button type="button" onClick={onClose} className="secondary-btn">
@@ -567,12 +573,12 @@ function ProductsPage() {
             {filtered.map((item) => (
               <tr key={item.id}>
                 <td>
-                  <TruncatedText value={item.productInfo} maxLength={23} />
+                  <EllipsisCell text={item.productInfo} maxWidth="23ch" />
                 </td>
                 <td>{displayValue(item.category)}</td>
                 <td>{displayValue(item.stock)}</td>
                 <td>
-                  <TruncatedText value={item.suppliers} maxLength={16} />
+                  <EllipsisCell text={item.suppliers} maxWidth="16ch" />
                 </td>
                 <td>{formatCurrency(item.price)}</td>
                 <td className="actions-cell">
@@ -658,27 +664,27 @@ function SupplierModal({ open, initialValues, onClose, onSubmit }) {
         <label>
           Suppliers Info
           <input {...register("suppliersInfo")} />
-          {errors.suppliersInfo ? <small>{errors.suppliersInfo.message}</small> : null}
+          {errors.suppliersInfo ? <small>{formErrorMessage(errors.suppliersInfo)}</small> : null}
         </label>
         <label>
           Address
           <input {...register("address")} />
-          {errors.address ? <small>{errors.address.message}</small> : null}
+          {errors.address ? <small>{formErrorMessage(errors.address)}</small> : null}
         </label>
         <label>
           Company
           <input {...register("company")} />
-          {errors.company ? <small>{errors.company.message}</small> : null}
+          {errors.company ? <small>{formErrorMessage(errors.company)}</small> : null}
         </label>
         <label>
           Delivery date
           <input type="date" {...register("deliveryDate")} />
-          {errors.deliveryDate ? <small>{errors.deliveryDate.message}</small> : null}
+          {errors.deliveryDate ? <small>{formErrorMessage(errors.deliveryDate)}</small> : null}
         </label>
         <label>
           Amount
           <input type="number" {...register("amount")} />
-          {errors.amount ? <small>{errors.amount.message}</small> : null}
+          {errors.amount ? <small>{formErrorMessage(errors.amount)}</small> : null}
         </label>
         <label>
           Status
@@ -757,10 +763,10 @@ function SuppliersPage() {
               <tr key={item.id}>
                 <td>{displayValue(item.suppliersInfo)}</td>
                 <td>
-                  <TruncatedText value={item.address} maxLength={20} />
+                  <EllipsisCell text={item.address} maxWidth="20ch" />
                 </td>
                 <td>
-                  <TruncatedText value={item.company} maxLength={18} />
+                  <EllipsisCell text={item.company} maxWidth="18ch" />
                 </td>
                 <td>{displayValue(item.deliveryDate)}</td>
                 <td>{formatCurrency(item.amount)}</td>
@@ -838,7 +844,7 @@ function CustomersPage() {
                 <td>{displayValue(item.userInfo)}</td>
                 <td>{displayValue(item.email)}</td>
                 <td>
-                  <TruncatedText value={item.address} maxLength={20} />
+                  <EllipsisCell text={item.address} maxWidth="20ch" />
                 </td>
                 <td>{displayValue(item.phone)}</td>
                 <td>{displayValue(item.registerDate)}</td>

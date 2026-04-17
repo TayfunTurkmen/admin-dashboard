@@ -24,7 +24,7 @@ React + Vite ile gelistirilmis eczane yonetim paneli projesi. Dashboard, siparis
 - Firebase
 - React Hook Form
 - Yup
-- Tablolarda metin kisaltma: yerel `TruncatedText` bileşeni
+- Uzun metinler: `EllipsisCell` (CSS `text-overflow: ellipsis`)
 
 ## Kurulum
 

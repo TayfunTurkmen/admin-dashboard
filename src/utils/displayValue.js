@@ -3,6 +3,9 @@ export function displayValue(value) {
   if (typeof value === "string" || typeof value === "number" || typeof value === "boolean") {
     return String(value);
   }
+  if (typeof value === "object" && typeof value.latitude === "number" && typeof value.longitude === "number") {
+    return `${value.latitude}, ${value.longitude}`;
+  }
   if (value instanceof Date) {
     return value.toISOString().slice(0, 10);
   }

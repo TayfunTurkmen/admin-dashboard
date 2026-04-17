@@ -1,4 +1,12 @@
-import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
+import {
+  Timestamp,
+  addDoc,
+  collection,
+  deleteDoc,
+  doc,
+  getDocs,
+  updateDoc,
+} from "firebase/firestore";
 import { db, isFirebaseConfigured } from "./firebase";
 import { initialData } from "../data/mockData";
 
@@ -21,14 +29,40 @@ const writeLocalStore = (data) => {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 };
 
+const serializeFirestoreDeep = (value) => {
+  if (value == null) return value;
+  if (value instanceof Timestamp) {
+    return value.toDate().toISOString();
+  }
+  if (Array.isArray(value)) {
+    return value.map(serializeFirestoreDeep);
+  }
+  if (typeof value === "object") {
+    if (typeof value.toDate === "function") {
+      try {
+        return value.toDate().toISOString();
+      } catch {
+        /* fall through */
+      }
+    }
+    if (Object.getPrototypeOf(value) === Object.prototype) {
+      return Object.fromEntries(
+        Object.entries(value).map(([key, nested]) => [key, serializeFirestoreDeep(nested)]),
+      );
+    }
+  }
+  return value;
+};
+
 export const fetchCollection = async (collectionName) => {
   if (isFirebaseConfigured && db) {
     const snap = await getDocs(collection(db, collectionName));
     if (collectionName === "statistics") {
       const statsDoc = snap.docs[0];
-      return statsDoc ? { id: statsDoc.id, ...statsDoc.data() } : clone(initialData.statistics);
+      const raw = statsDoc ? { id: statsDoc.id, ...statsDoc.data() } : clone(initialData.statistics);
+      return serializeFirestoreDeep(raw);
     }
-    return snap.docs.map((item) => ({ id: item.id, ...item.data() }));
+    return snap.docs.map((item) => serializeFirestoreDeep({ id: item.id, ...item.data() }));
   }
 
   await delay();

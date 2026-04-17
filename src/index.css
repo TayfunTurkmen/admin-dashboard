@@ -209,6 +209,14 @@ select {
   overflow: auto;
 }
 
+.ellipsis-cell {
+  display: inline-block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  vertical-align: bottom;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

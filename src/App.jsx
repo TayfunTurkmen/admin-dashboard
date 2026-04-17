@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useMemo, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
 import EllipsisText from "react-ellipsis-text";
 import { useForm } from "react-hook-form";
@@ -52,6 +52,18 @@ function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  const login = useCallback(async (credentials) => {
+    const authUser = await loginUser(credentials);
+    setUser(authUser);
+    setLoading(false);
+    return authUser;
+  }, []);
+
+  const logout = useCallback(async () => {
+    await logoutUser();
+    setUser(null);
+  }, []);
+
   useEffect(() => {
     const unsubscribe = observeAuthState((authUser) => {
       setUser(authUser);
@@ -65,13 +77,10 @@ function AuthProvider({ children }) {
     () => ({
       user,
       loading,
-      login: loginUser,
-      logout: async () => {
-        await logoutUser();
-        setUser(null);
-      },
+      login,
+      logout,
     }),
-    [user, loading],
+    [user, loading, login, logout],
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

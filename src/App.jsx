@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { yupResolver } from "@hookform/resolvers/yup";
-import EllipsisText from "react-ellipsis-text";
+import { TruncatedText } from "./components/TruncatedText";
 import { useForm } from "react-hook-form";
 import {
   Link,
@@ -191,7 +191,7 @@ function LoginPage() {
       await login(values);
       navigate("/home", { replace: true });
     } catch (error) {
-      setRequestError(error.message);
+      setRequestError(error?.message ? String(error.message) : String(error));
     }
   };
 
@@ -281,7 +281,7 @@ function DashboardPage() {
               {recentCustomers.map((item) => (
                 <tr key={item.id}>
                   <td>
-                    <EllipsisText text={displayValue(item.name)} length={18} />
+                    <TruncatedText value={item.name} maxLength={18} />
                   </td>
                   <td>{displayValue(item.email)}</td>
                   <td>{formatCurrency(item.spent)}</td>
@@ -366,10 +366,10 @@ function OrdersPage() {
               <tr key={item.id}>
                 <td>{displayValue(item.userInfo)}</td>
                 <td>
-                  <EllipsisText text={displayValue(item.address)} length={21} />
+                  <TruncatedText value={item.address} maxLength={21} />
                 </td>
                 <td>
-                  <EllipsisText text={displayValue(item.products)} length={22} />
+                  <TruncatedText value={item.products} maxLength={22} />
                 </td>
                 <td>{displayValue(item.orderDate)}</td>
                 <td>{formatCurrency(item.price)}</td>
@@ -567,12 +567,12 @@ function ProductsPage() {
             {filtered.map((item) => (
               <tr key={item.id}>
                 <td>
-                  <EllipsisText text={displayValue(item.productInfo)} length={23} />
+                  <TruncatedText value={item.productInfo} maxLength={23} />
                 </td>
                 <td>{displayValue(item.category)}</td>
                 <td>{displayValue(item.stock)}</td>
                 <td>
-                  <EllipsisText text={displayValue(item.suppliers)} length={16} />
+                  <TruncatedText value={item.suppliers} maxLength={16} />
                 </td>
                 <td>{formatCurrency(item.price)}</td>
                 <td className="actions-cell">
@@ -757,10 +757,10 @@ function SuppliersPage() {
               <tr key={item.id}>
                 <td>{displayValue(item.suppliersInfo)}</td>
                 <td>
-                  <EllipsisText text={displayValue(item.address)} length={20} />
+                  <TruncatedText value={item.address} maxLength={20} />
                 </td>
                 <td>
-                  <EllipsisText text={displayValue(item.company)} length={18} />
+                  <TruncatedText value={item.company} maxLength={18} />
                 </td>
                 <td>{displayValue(item.deliveryDate)}</td>
                 <td>{formatCurrency(item.amount)}</td>
@@ -838,7 +838,7 @@ function CustomersPage() {
                 <td>{displayValue(item.userInfo)}</td>
                 <td>{displayValue(item.email)}</td>
                 <td>
-                  <EllipsisText text={displayValue(item.address)} length={20} />
+                  <TruncatedText value={item.address} maxLength={20} />
                 </td>
                 <td>{displayValue(item.phone)}</td>
                 <td>{displayValue(item.registerDate)}</td>
